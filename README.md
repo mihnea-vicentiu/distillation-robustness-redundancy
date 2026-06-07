@@ -10,7 +10,7 @@
 &emsp; Lutu Adrian-Catalin ($407$) <br/>
 &emsp; Pasarin Ioan-David ($407$) <br/>
 
-&emsp;&emsp;&emsp; **Project's Topic** <br/>
+&emsp;&emsp;&emsp; **Project's Topic:** <br/>
 <br/>
 &emsp; Exploring Robustness and Redundancy in Distilled Encoder – Decoder Models <br/>
 
