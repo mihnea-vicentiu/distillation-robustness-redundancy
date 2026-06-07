@@ -3,7 +3,7 @@
 
 <br/>
 
-&emsp;&emsp;&emsp; **Students:** <br/>
+&emsp;&emsp;&emsp; **Team Members:** <br/>
 <br/>
 &emsp; Capatina Razvan-Nicolae ($407$) <br/>
 &emsp; Buca Mihnea-Vicentiu ($408$) <br/>
