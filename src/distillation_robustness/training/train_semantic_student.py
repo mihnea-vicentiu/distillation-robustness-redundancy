@@ -7,9 +7,14 @@ from transformers import (
     Seq2SeqTrainingArguments
 )
 
-def train_student():
-    train_data = load_from_disk("./semantic/self_instruct_teacher/self_instruct_train")
-    val_data = load_from_disk("./semantic/self_instruct_teacher/self_instruct_validation")
+from distillation_robustness.paths import MODEL_DIR, TEACHER_OUTPUT_DIR
+
+
+def train_semantic_student():
+    """Train a student model using unfiltered teacher outputs."""
+
+    train_data = load_from_disk(str(TEACHER_OUTPUT_DIR / "self_instruct" / "train"))
+    val_data = load_from_disk(str(TEACHER_OUTPUT_DIR / "self_instruct" / "validation"))
     
     student_id = "google/flan-t5-large"
     tokenizer = T5Tokenizer.from_pretrained(student_id)
@@ -38,7 +43,7 @@ def train_student():
     tokenized_val = val_data.map(lambda x: tokenize_function(x, use_teacher=False), batched=True)
 
     args = Seq2SeqTrainingArguments(
-        output_dir="./t5_distilled_student",
+        output_dir=str(MODEL_DIR / "semantic_student"),
         eval_strategy="epoch",
         learning_rate=3e-5,
         per_device_train_batch_size=4,
@@ -59,7 +64,7 @@ def train_student():
     )
 
     trainer.train()
-    trainer.save_model("./flan_t5_distilled_student_self_instruct/final")
+    trainer.save_model(str(MODEL_DIR / "semantic_student" / "final"))
 
 if __name__ == "__main__":
-    train_student()
+    train_semantic_student()

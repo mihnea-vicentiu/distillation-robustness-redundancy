@@ -1,7 +1,10 @@
-import datasets
 import random
+
+import datasets
 import numpy
 import torch
+
+from distillation_robustness.paths import PROCESSED_DATA_DIR
 
 SEED = 42
 DEVICE = 'cpu'
@@ -20,6 +23,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 def preprocess_self_instruct_dataset(dataset):
+  """Prepare Self-Instruct examples for teacher generation and training."""
 
   def preprocess_sample(sample):
       prompt = sample.get('prompt', '').strip()
@@ -61,9 +65,9 @@ def preprocess_self_instruct_dataset(dataset):
 
 if __name__ == "__main__":
     raw_dataset = datasets.load_dataset(
-    "parquet", 
-    data_files="hf://datasets/yizhongw/self_instruct@refs/convert/parquet/self_instruct/**/*.parquet"
-)
+        "parquet",
+        data_files="hf://datasets/yizhongw/self_instruct@refs/convert/parquet/self_instruct/**/*.parquet"
+    )
     processed_dataset = preprocess_self_instruct_dataset(raw_dataset)
-    
-    processed_dataset.save_to_disk("./self_instruct_splits")
+
+    processed_dataset.save_to_disk(str(PROCESSED_DATA_DIR / "self_instruct_splits"))

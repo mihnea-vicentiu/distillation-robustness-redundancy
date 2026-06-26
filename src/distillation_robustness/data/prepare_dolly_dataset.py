@@ -1,7 +1,10 @@
-import datasets
 import random
+
+import datasets
 import numpy
 import torch
+
+from distillation_robustness.paths import PROCESSED_DATA_DIR
 
 SEED = 42
 DEVICE = 'cpu'
@@ -20,6 +23,8 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 def preprocess_databricks_dolly_15k_dataset(dataset):
+    """Prepare Dolly examples for encoder-decoder instruction tuning."""
+
     def filter_sample(sample):
         if sample['category'] == 'classification':
             return sample['context'] != ''
@@ -77,5 +82,5 @@ def preprocess_databricks_dolly_15k_dataset(dataset):
 if __name__ == "__main__":
     raw_dataset = datasets.load_dataset("databricks/databricks-dolly-15k")
     processed_dataset = preprocess_databricks_dolly_15k_dataset(raw_dataset)
-    
-    processed_dataset.save_to_disk("./dolly_splits")
+
+    processed_dataset.save_to_disk(str(PROCESSED_DATA_DIR / "dolly_splits"))

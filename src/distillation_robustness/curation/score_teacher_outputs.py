@@ -3,6 +3,9 @@ from datasets import load_from_disk
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 
+from distillation_robustness.paths import SCORED_DATA_DIR, TEACHER_OUTPUT_DIR
+
+
 def compute_sequence_log_prob(model, input_ids, prompt_length):
     with torch.no_grad():
         outputs = model(input_ids)
@@ -17,7 +20,9 @@ def compute_sequence_log_prob(model, input_ids, prompt_length):
         return response_log_probs.mean().item()
 
 def score_dataset():
-    dataset = load_from_disk("./semantic/self_instruct_teacher/self_instruct_train")
+    """Score teacher outputs against a smaller reference model."""
+
+    dataset = load_from_disk(str(TEACHER_OUTPUT_DIR / "self_instruct" / "train"))
     
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -56,7 +61,7 @@ def score_dataset():
     dataset = dataset.add_column("teacher_score", teacher_scores)
     dataset = dataset.add_column("ref_score", ref_scores)
     
-    dataset.save_to_disk("./miniplm/self_instruct_train_miniplm_scored")
+    dataset.save_to_disk(str(SCORED_DATA_DIR / "self_instruct_teacher_scores"))
     print("Success! Dataset scored and saved.")
 
 if __name__ == "__main__":

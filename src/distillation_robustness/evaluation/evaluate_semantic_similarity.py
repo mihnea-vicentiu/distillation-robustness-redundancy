@@ -1,18 +1,23 @@
 import torch
 from datasets import load_from_disk
-from transformers import T5ForConditionalGeneration, T5Tokenizer
 from sentence_transformers import SentenceTransformer, util
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 from tqdm import tqdm
 
+from distillation_robustness.paths import MODEL_DIR, TEACHER_OUTPUT_DIR
+
+
 def evaluate_models():
-    test_data = load_from_disk("./semantic/dolly_teacher/dolly_test")
+    """Compare student generations against teacher outputs with embedding similarity."""
+
+    test_data = load_from_disk(str(TEACHER_OUTPUT_DIR / "dolly" / "test"))
     
-    student_path = "./miniplm/t5_distilled_dolly/final"
-    s_tokenizer = T5Tokenizer.from_pretrained(student_path)
+    student_path = MODEL_DIR / "dolly_filtered_student" / "final"
+    s_tokenizer = T5Tokenizer.from_pretrained(str(student_path))
     
     device = "cuda" if torch.cuda.is_available() else "cpu"
     s_model = T5ForConditionalGeneration.from_pretrained(
-        student_path, 
+        str(student_path),
         torch_dtype=torch.bfloat16
     ).to(device)
     s_model.eval()

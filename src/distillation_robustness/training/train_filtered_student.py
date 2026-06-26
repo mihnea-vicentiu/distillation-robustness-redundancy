@@ -7,9 +7,14 @@ from transformers import (
     Seq2SeqTrainingArguments
 )
 
-def train_student_miniplm():
-    train_data = load_from_disk("./miniplm/self_instruct_train_miniplm_filtered")
-    val_data = load_from_disk("./self_instruct_splits")['validation']
+from distillation_robustness.paths import FILTERED_DATA_DIR, MODEL_DIR, PROCESSED_DATA_DIR
+
+
+def train_filtered_student():
+    """Train a student model on high-value teacher outputs selected by scoring."""
+
+    train_data = load_from_disk(str(FILTERED_DATA_DIR / "self_instruct_high_value"))
+    val_data = load_from_disk(str(PROCESSED_DATA_DIR / "self_instruct_splits"))['validation']
     
     student_id = "google/flan-t5-large"
     tokenizer = T5Tokenizer.from_pretrained(student_id)
@@ -38,7 +43,7 @@ def train_student_miniplm():
     tokenized_val = val_data.map(lambda x: tokenize_function(x, use_teacher=False), batched=True)
 
     args = Seq2SeqTrainingArguments(
-        output_dir="./miniplm/flan_t5_distilled_self_instruct",
+        output_dir=str(MODEL_DIR / "filtered_student"),
         eval_strategy="epoch",             
         learning_rate=3e-5,
         per_device_train_batch_size=4,
@@ -60,7 +65,7 @@ def train_student_miniplm():
     )
 
     trainer.train()
-    trainer.save_model("./miniplm/flan_t5_distilled_self_instruct/final")
+    trainer.save_model(str(MODEL_DIR / "filtered_student" / "final"))
 
 if __name__ == "__main__":
-    train_student_miniplm()
+    train_filtered_student()

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+.venv/
+venv/
+
+/data/
+/models/
+/runs/
+/wandb/
+*.log
+
+.DS_Store
